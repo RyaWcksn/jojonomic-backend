@@ -4,9 +4,9 @@ services:
     image: postgres:14.1-alpine
     restart: always
     environment:
-      - POSTGRES_USER=adminpostgres
-      - POSTGRES_PASSWORD=87654321
-      - POSTGRES_DB=gold_store
+      - POSTGRES_USER=engineerone
+      - POSTGRES_PASSWORD=p4ssw0rd1
+      - POSTGRES_DB=jojonomic_gold
     ports:
       - '5432:5432'
     volumes: 
