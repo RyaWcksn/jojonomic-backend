@@ -138,5 +138,28 @@ services:
     networks:
       - default-network
 
+  topup-service:
+    build: 
+      context: ../microservices/topup-service
+      dockerfile: Dockerfile
+    ports:
+      - "7003:7003"
+    restart: always
+    environment:
+      ENV: dev
+      SERVICE: topup
+      LOG_LEVEL: debug
+      HOST: 0.0.0.0
+      PORT: 7003
+      PRICE_ADDR: check-harga-service:7002
+      KAFKA_ADDR: kafka:29092
+      KAFKA_TOPIC: topup
+    depends_on:
+      - zookeeper  
+      - kafka
+      - check-harga-service
+    networks:
+      - default-network
+
 networks:
   default-network:
