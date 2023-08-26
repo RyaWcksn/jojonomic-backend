@@ -26,7 +26,7 @@ func SRV(cfg config.Config, log logger.ILogger) {
 	handler := handler.NewHandler(serviceImpl, log)
 
 	r := mux.NewRouter()
-	r.Handle("/api/input-harga/", middleware.ErrHandler(handler.InputHargaHandler))
+	r.Handle("/api/input-harga", middleware.ErrHandler(handler.InputHargaHandler)).Methods(http.MethodPost)
 	srv := &http.Server{
 		Handler:      r,
 		Addr:         fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),

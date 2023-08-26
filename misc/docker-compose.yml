@@ -82,5 +82,61 @@ services:
     networks:
       - default-network
 
+  input-harga-storage:
+    build: 
+      context: ../microservices/input-harga-storage
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      ENV: dev
+      SERVICE: input-harga-storage
+      LOG_LEVEL: debug
+      HOST: 0.0.0.0
+      PORT: 7001
+      KAFKA_ADDR: kafka:29092
+      KAFKA_TOPIC: input-harga
+      SQL_ADDR: postgres
+      SQL_PORT: 5432
+      SQL_USER: engineerone
+      SQL_PASS: p4ssw0rd1
+      SQL_DB: jojonomic_gold
+      SQL_MAX_CONN: 10
+      SQL_MAX_OPEN: 10
+    depends_on:
+      - zookeeper  
+      - kafka
+      - postgres
+    networks:
+      - default-network
+
+  check-harga-service:
+    build: 
+      context: ../microservices/check-harga-service
+      dockerfile: Dockerfile
+    ports:
+      - "7002:7002"
+    restart: always
+    environment:
+      ENV: dev
+      SERVICE: check-harga-service
+      LOG_LEVEL: debug
+      HOST: 0.0.0.0
+      PORT: 7002
+      KAFKA_ADDR: kafka:29092
+      KAFKA_TOPIC: input-harga
+      SQL_ADDR: postgres
+      SQL_PORT: 5432
+      SQL_USER: engineerone
+      SQL_PASS: p4ssw0rd1
+      SQL_DB: jojonomic_gold
+      SQL_MAX_CONN: 10
+      SQL_MAX_OPEN: 10
+    depends_on:
+      - zookeeper  
+      - kafka
+      - postgres
+    networks:
+      - default-network
+
 networks:
   default-network:
