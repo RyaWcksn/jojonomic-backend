@@ -27,7 +27,7 @@ func (s *ServiceImpl) Consume(ctx context.Context) {
 			s.log.Errorf("Error while get gold balance := %v", err)
 			continue
 		}
-		goldBalance.GoldBalance += producedMessage.GoldWeight
+		goldBalance.Data.GoldBalance += producedMessage.GoldWeight
 		transactionPayload := transaction.TransactionEntity{
 			ReffId:       producedMessage.ReffId,
 			Type:         producedMessage.Type,
@@ -38,7 +38,7 @@ func (s *ServiceImpl) Consume(ctx context.Context) {
 			// Still not sure is the transaction will be sum of current balance and topup
 			// Or last balance, let's assume sum for now
 			//GoldBalance:  goldBalance.GoldBalance,
-			GoldBalance: goldBalance.GoldBalance,
+			GoldBalance: goldBalance.Data.GoldBalance,
 		}
 		err = s.tarnsactionImpl.Insert(ctx, &transactionPayload)
 		if err != nil {

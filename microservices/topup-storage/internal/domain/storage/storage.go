@@ -2,25 +2,25 @@ package storage
 
 import (
 	"context"
-	"database/sql"
 
+	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/config"
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/logger"
 )
 
 type IStorage interface {
-	Get(ctx context.Context, payload *StorageEntityReq) (res *StorageEntityRes, err error)
+	Get(ctx context.Context, payload *StorageEntityReq) (res *SaldoEntity, err error)
 }
 
 type StorageImpl struct {
-	sql *sql.DB
+	cfg config.Config
 	log logger.ILogger
 }
 
 var _ IStorage = (*StorageImpl)(nil)
 
-func NewStorage(sql *sql.DB, l logger.ILogger) *StorageImpl {
+func NewStorage(cfg config.Config, l logger.ILogger) *StorageImpl {
 	return &StorageImpl{
-		sql: sql,
+		cfg: cfg,
 		log: l,
 	}
 }

@@ -2,74 +2,70 @@ package storage
 
 import (
 	"context"
-	"database/sql"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"reflect"
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/config"
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/logger"
 )
 
 func TestStorageImpl_Get(t *testing.T) {
+	expect :=
+		`
+{
+   "error": false,
+   "data": {
+      "norek": "rek001",
+      "saldo": 0.001
+   }
+}
+`
 
-	db, mock, _ := sqlmock.New()
-	defer db.Close()
+	svr := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			fmt.Fprintf(w, expect)
+		}))
 
-	l := logger.New("", "", "")
+	cfg := config.Config{}
+	cfg.SaldoAddr = svr.URL
+	l := logger.New("dev", "dev", "debug")
 
 	type args struct {
 		ctx     context.Context
 		payload *StorageEntityReq
 	}
 	tests := []struct {
-		name     string
-		args     args
-		wantRes  *StorageEntityRes
-		wantErr  bool
-		wantMock func()
+		name    string
+		args    args
+		wantRes *SaldoEntity
+		wantErr bool
 	}{
 		{
 			name: "Success",
 			args: args{
 				ctx: context.TODO(),
 				payload: &StorageEntityReq{
-					Norek:  "rek123",
+					Norek:  "rek001",
 					ReffId: "ref123",
 				},
 			},
-			wantRes: &StorageEntityRes{
-				GoldBalance: 0.01,
-			},
-			wantErr: false,
-			wantMock: func() {
-				rows := sqlmock.NewRows([]string{"gold_balance"}).
-					AddRow(0.01)
-				mock.ExpectQuery("SELECT gold_balance FROM tbl_rekening WHERE norek = \\$1").
-					WithArgs("rek123").
-					WillReturnRows(rows)
-			},
-		},
-		{
-			name: "Error on query",
-			args: args{
-				ctx: context.TODO(),
-				payload: &StorageEntityReq{
-					Norek: "54321",
+			wantRes: &SaldoEntity{
+				IsError: false,
+				Data: Data{
+					Norek:       "rek001",
+					GoldBalance: 0.001,
 				},
 			},
-			wantMock: func() {
-				mock.ExpectQuery("SELECT gold_balance FROM tbl_rekening WHERE norek = ?").
-					WithArgs("54321").
-					WillReturnError(sql.ErrNoRows) // Replace with your desired error
-			},
-			wantRes: nil,
-			wantErr: true,
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.wantMock()
-			s := NewStorage(db, l)
+			s := NewStorage(cfg, l)
 			gotRes, err := s.Get(tt.args.ctx, tt.args.payload)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("StorageImpl.Get() error = %v, wantErr %v", err, tt.wantErr)

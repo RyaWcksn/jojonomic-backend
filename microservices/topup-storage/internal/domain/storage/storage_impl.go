@@ -1,25 +1,44 @@
 package storage
 
 import (
+	"bytes"
 	"context"
-	"time"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
 
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/errors"
 )
 
 // Get implements IStorage.
-func (s *StorageImpl) Get(ctx context.Context, payload *StorageEntityReq) (res *StorageEntityRes, err error) {
-	ctxDb, cancel := context.WithTimeout(ctx, 3*time.Second)
-	defer cancel()
+func (s *StorageImpl) Get(ctx context.Context, payload *StorageEntityReq) (res *SaldoEntity, err error) {
+	body := fmt.Sprintf(`{"norek": "%s"}`, payload.Norek)
+	jsonBody := []byte(body)
+	bodyReader := bytes.NewReader(jsonBody)
 
-	var recDetail StorageEntityRes
-
-	query := "SELECT gold_balance FROM tbl_rekening WHERE norek = $1"
-	err = s.sql.QueryRowContext(ctxDb, query, payload.Norek).Scan(&recDetail.GoldBalance)
+	httpRes, err := http.Post(s.cfg.SaldoAddr+"/api/check-saldo", "application/json", bodyReader)
 	if err != nil {
-		s.log.Errorf("ERR := %v, Reff_id := %v", err, payload.ReffId)
+		s.log.Errorf("ERROR := %v , reff_id := %v", err, payload.ReffId)
+		return nil, errors.GetError(payload.ReffId, err)
+	}
+	defer httpRes.Body.Close()
+
+	out, err := io.ReadAll(httpRes.Body)
+	if err != nil {
+		s.log.Errorf("ERROR := %v , reff_id := %v", err.Error(), payload.ReffId)
+		return nil, errors.GetError(payload.ReffId, err)
+	}
+	fmt.Println("SALDO := ", string(out))
+
+	s.log.Infof("SALDO := %v", string(out))
+
+	var saldo SaldoEntity
+	if err := json.Unmarshal(out, &saldo); err != nil {
+		s.log.Errorf("ERROR := %v , reff_id := %v", err, payload.ReffId)
 		return nil, errors.GetError(payload.ReffId, err)
 	}
 
-	return &recDetail, nil
+	return &saldo, nil
+
 }

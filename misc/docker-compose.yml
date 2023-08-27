@@ -175,6 +175,38 @@ services:
       PORT: 7001
       KAFKA_ADDR: kafka:29092
       KAFKA_TOPIC: topup
+      SALDO_ADDR: http://check-saldo-service:7004
+      SQL_ADDR: postgres
+      SQL_PORT: 5432
+      SQL_USER: engineerone
+      SQL_PASS: p4ssw0rd1
+      SQL_DB: jojonomic_gold
+      SQL_MAX_CONN: 10
+      SQL_MAX_OPEN: 10
+    depends_on:
+      - zookeeper  
+      - kafka
+      - postgres
+      - check-saldo-service
+    networks:
+      - default-network
+
+
+  check-saldo-service:
+    build: 
+      context: ../microservices/check-saldo-service
+      dockerfile: Dockerfile
+    ports:
+      - "7004:7004"
+    restart: always
+    environment:
+      ENV: dev
+      SERVICE: check-saldo-service
+      LOG_LEVEL: debug
+      HOST: 0.0.0.0
+      PORT: 7004
+      KAFKA_ADDR: kafka:29092
+      KAFKA_TOPIC: input-harga
       SQL_ADDR: postgres
       SQL_PORT: 5432
       SQL_USER: engineerone

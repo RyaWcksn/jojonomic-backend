@@ -26,8 +26,6 @@ type Config struct {
 	SQLDatabase   string
 	MaxConnection int
 	MaxOpen       int
-
-	SaldoAddr string
 }
 
 func InitCfg() *Config {
@@ -56,8 +54,6 @@ func InitCfg() *Config {
 	maxConn, _ := strconv.Atoi(os.Getenv("SQL_MAX_CONN"))
 	maxOpen, _ := strconv.Atoi(os.Getenv("SQL_MAX_OPEN"))
 
-	saldoAddr := os.Getenv("SALDO_ADDR")
-
 	return &Config{
 		Env:           env,
 		Service:       service,
@@ -73,6 +69,5 @@ func InitCfg() *Config {
 		SQLDatabase:   db,
 		MaxConnection: maxConn,
 		MaxOpen:       maxOpen,
-		SaldoAddr:     saldoAddr,
 	}
 }

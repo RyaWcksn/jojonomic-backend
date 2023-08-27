@@ -25,7 +25,7 @@ func SRV(cfg config.Config, log logger.ILogger) {
 	defer dbConn.Close()
 
 	transactionImpl := transaction.NewTransaction(dbConn, log)
-	storageImpl := storage.NewStorage(dbConn, log)
+	storageImpl := storage.NewStorage(cfg, log)
 	brokerImpl := broker.NewBrokerImpl(kafkaConn, log)
 	serviceImpl := service.NewService(brokerImpl, log, storageImpl, transactionImpl)
 
