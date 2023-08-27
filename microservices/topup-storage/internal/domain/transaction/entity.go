@@ -8,4 +8,5 @@ type TransactionEntity struct {
 	HargaBuyBack int64   `json:"harga_buy_back"`
 	GoldWeight   float64 `json:"gram"`
 	GoldBalance  float64 `json:"saldo"`
+	CreatedAt    int
 }

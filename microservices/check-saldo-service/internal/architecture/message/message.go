@@ -3,8 +3,8 @@ package message
 import (
 	"strings"
 
-	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/config"
-	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/logger"
+	"github.com/RyaWcksn/jojonomic-backend/check-saldo-service/internal/config"
+	"github.com/RyaWcksn/jojonomic-backend/check-saldo-service/internal/pkgs/logger"
 	"github.com/segmentio/kafka-go"
 )
 

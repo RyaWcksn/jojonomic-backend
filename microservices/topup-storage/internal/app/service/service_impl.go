@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/domain/broker"
+	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/domain/rekening"
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/domain/storage"
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/domain/transaction"
 )
@@ -27,7 +28,9 @@ func (s *ServiceImpl) Consume(ctx context.Context) {
 			s.log.Errorf("Error while get gold balance := %v", err)
 			continue
 		}
-		goldBalance.Data.GoldBalance += producedMessage.GoldWeight
+		currGoldBalance := goldBalance.Data.GoldBalance
+		currGoldBalance += producedMessage.GoldWeight
+		s.log.Infof("GOLD BALANCE := ", goldBalance.Data.GoldBalance)
 		transactionPayload := transaction.TransactionEntity{
 			ReffId:       producedMessage.ReffId,
 			Type:         producedMessage.Type,
@@ -35,12 +38,18 @@ func (s *ServiceImpl) Consume(ctx context.Context) {
 			HargaTopup:   producedMessage.HargaTopup,
 			HargaBuyBack: producedMessage.HargaBuyBack,
 			GoldWeight:   producedMessage.GoldWeight,
-			// Still not sure is the transaction will be sum of current balance and topup
-			// Or last balance, let's assume sum for now
-			//GoldBalance:  goldBalance.GoldBalance,
-			GoldBalance: goldBalance.Data.GoldBalance,
+			GoldBalance:  currGoldBalance,
 		}
 		err = s.tarnsactionImpl.Insert(ctx, &transactionPayload)
+		if err != nil {
+			s.log.Errorf("Error while insert transaction := %v", err)
+			return
+		}
+		rekeningPayload := rekening.RekeningEntity{
+			Norek:      producedMessage.Norek,
+			GoldWeight: currGoldBalance,
+		}
+		err = s.rekeningImpl.UpdateSaldo(ctx, &rekeningPayload)
 		if err != nil {
 			s.log.Errorf("Error while insert transaction := %v", err)
 			return

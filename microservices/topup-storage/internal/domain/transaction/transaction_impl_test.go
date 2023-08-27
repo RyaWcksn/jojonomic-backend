@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/logger"
@@ -44,16 +45,16 @@ func TestTransactionImpl_Insert(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 
 			mock.ExpectBegin()
-			query := "INSERT INTO tbl_transaksi\\(reff_id, norek, type, harga_topup, harga_buyback, gold_weight, gold_balance\\) VALUES\\(\\$1, \\$2, \\$3, \\$4, \\$5, \\$6, \\$7\\)"
+			query := "INSERT INTO tbl_transaksi\\(reff_id, norek, type, harga_topup, harga_buyback, gold_weight, gold_balance, created_at\\) VALUES\\(\\$1, \\$2, \\$3, \\$4, \\$5, \\$6, \\$7, \\$8\\)"
 			if tt.wantErr {
 				mock.ExpectPrepare(query).
 					ExpectExec().
-					WithArgs(tt.args.payload.ReffId, tt.args.payload.Norek, tt.args.payload.Type, tt.args.payload.HargaTopup, tt.args.payload.HargaBuyBack, tt.args.payload.GoldWeight, tt.args.payload.GoldBalance).
+					WithArgs(tt.args.payload.ReffId, tt.args.payload.Norek, tt.args.payload.Type, tt.args.payload.HargaTopup, tt.args.payload.HargaBuyBack, tt.args.payload.GoldWeight, tt.args.payload.GoldBalance, time.Now().Local().Unix).
 					WillReturnError(fmt.Errorf("duplicate entry"))
 			} else {
 				mock.ExpectPrepare(query).
 					ExpectExec().
-					WithArgs(tt.args.payload.ReffId, tt.args.payload.Norek, tt.args.payload.Type, tt.args.payload.HargaTopup, tt.args.payload.HargaBuyBack, tt.args.payload.GoldWeight, tt.args.payload.GoldBalance).
+					WithArgs(tt.args.payload.ReffId, tt.args.payload.Norek, tt.args.payload.Type, tt.args.payload.HargaTopup, tt.args.payload.HargaBuyBack, tt.args.payload.GoldWeight, tt.args.payload.GoldBalance, time.Now().Local().Unix).
 					WillReturnResult(sqlmock.NewResult(1, 1))
 			}
 			mock.ExpectCommit()

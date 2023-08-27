@@ -11,6 +11,7 @@ import (
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/architecture/message"
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/config"
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/domain/broker"
+	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/domain/rekening"
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/domain/storage"
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/domain/transaction"
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/errors"
@@ -24,10 +25,11 @@ func SRV(cfg config.Config, log logger.ILogger) {
 	dbConn := db.DBConnect()
 	defer dbConn.Close()
 
+	rekeningImpl := rekening.NewRekening(dbConn, log)
 	transactionImpl := transaction.NewTransaction(dbConn, log)
 	storageImpl := storage.NewStorage(cfg, log)
 	brokerImpl := broker.NewBrokerImpl(kafkaConn, log)
-	serviceImpl := service.NewService(brokerImpl, log, storageImpl, transactionImpl)
+	serviceImpl := service.NewService(brokerImpl, log, storageImpl, transactionImpl, rekeningImpl)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/domain/broker"
+	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/domain/rekening"
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/domain/storage"
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/domain/transaction"
 	"github.com/RyaWcksn/jojonomic-backend/topup-storage/internal/logger"
@@ -14,6 +15,7 @@ type IService interface {
 }
 
 type ServiceImpl struct {
+	rekeningImpl    rekening.IRekening
 	brokerImpl      broker.IBroker
 	storageImpl     storage.IStorage
 	tarnsactionImpl transaction.ITransaction
@@ -22,8 +24,9 @@ type ServiceImpl struct {
 
 var _ IService = (*ServiceImpl)(nil)
 
-func NewService(b broker.IBroker, l logger.ILogger, s storage.IStorage, t transaction.ITransaction) *ServiceImpl {
+func NewService(b broker.IBroker, l logger.ILogger, s storage.IStorage, t transaction.ITransaction, r rekening.IRekening) *ServiceImpl {
 	return &ServiceImpl{
+		rekeningImpl:    r,
 		brokerImpl:      b,
 		storageImpl:     s,
 		tarnsactionImpl: t,
