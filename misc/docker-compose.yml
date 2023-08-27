@@ -4,8 +4,8 @@ services:
     image: postgres:14.1-alpine
     restart: always
     environment:
-      - POSTGRES_USER=engineerone
-      - POSTGRES_PASSWORD=p4ssw0rd1
+      - POSTGRES_USER=adminpostgres
+      - POSTGRES_PASSWORD=87654321
       - POSTGRES_DB=jojonomic_gold
     ports:
       - '5432:5432'
@@ -97,8 +97,8 @@ services:
       KAFKA_TOPIC: input-harga
       SQL_ADDR: postgres
       SQL_PORT: 5432
-      SQL_USER: engineerone
-      SQL_PASS: p4ssw0rd1
+      SQL_USER: adminpostgres
+      SQL_PASS: 87654321
       SQL_DB: jojonomic_gold
       SQL_MAX_CONN: 10
       SQL_MAX_OPEN: 10
@@ -126,8 +126,8 @@ services:
       KAFKA_TOPIC: input-harga
       SQL_ADDR: postgres
       SQL_PORT: 5432
-      SQL_USER: engineerone
-      SQL_PASS: p4ssw0rd1
+      SQL_USER: adminpostgres
+      SQL_PASS: 87654321
       SQL_DB: jojonomic_gold
       SQL_MAX_CONN: 10
       SQL_MAX_OPEN: 10
@@ -178,8 +178,8 @@ services:
       SALDO_ADDR: http://check-saldo-service:7004
       SQL_ADDR: postgres
       SQL_PORT: 5432
-      SQL_USER: engineerone
-      SQL_PASS: p4ssw0rd1
+      SQL_USER: adminpostgres
+      SQL_PASS: 87654321
       SQL_DB: jojonomic_gold
       SQL_MAX_CONN: 10
       SQL_MAX_OPEN: 10
@@ -209,8 +209,8 @@ services:
       KAFKA_TOPIC: input-harga
       SQL_ADDR: postgres
       SQL_PORT: 5432
-      SQL_USER: engineerone
-      SQL_PASS: p4ssw0rd1
+      SQL_USER: adminpostgres
+      SQL_PASS: 87654321
       SQL_DB: jojonomic_gold
       SQL_MAX_CONN: 10
       SQL_MAX_OPEN: 10
@@ -238,8 +238,8 @@ services:
       KAFKA_TOPIC: input-harga
       SQL_ADDR: postgres
       SQL_PORT: 5432
-      SQL_USER: engineerone
-      SQL_PASS: p4ssw0rd1
+      SQL_USER: adminpostgres
+      SQL_PASS: 87654321
       SQL_DB: jojonomic_gold
       SQL_MAX_CONN: 10
       SQL_MAX_OPEN: 10
@@ -271,6 +271,36 @@ services:
       - zookeeper  
       - kafka
       - check-harga-service
+      - check-saldo-service
+    networks:
+      - default-network
+
+
+  buyback-storage:
+    build: 
+      context: ../microservices/buyback-storage
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      ENV: dev
+      SERVICE: buyback-storage
+      LOG_LEVEL: debug
+      HOST: 0.0.0.0
+      PORT: 7001
+      KAFKA_ADDR: kafka:29092
+      KAFKA_TOPIC: buyback
+      SALDO_ADDR: http://check-saldo-service:7004
+      SQL_ADDR: postgres
+      SQL_PORT: 5432
+      SQL_USER: adminpostgres
+      SQL_PASS: 87654321
+      SQL_DB: jojonomic_gold
+      SQL_MAX_CONN: 10
+      SQL_MAX_OPEN: 10
+    depends_on:
+      - zookeeper  
+      - kafka
+      - postgres
       - check-saldo-service
     networks:
       - default-network
