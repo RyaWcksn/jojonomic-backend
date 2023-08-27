@@ -161,5 +161,33 @@ services:
     networks:
       - default-network
 
+
+  topup-storage:
+    build: 
+      context: ../microservices/topup-storage
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      ENV: dev
+      SERVICE: topup-storage
+      LOG_LEVEL: debug
+      HOST: 0.0.0.0
+      PORT: 7001
+      KAFKA_ADDR: kafka:29092
+      KAFKA_TOPIC: topup
+      SQL_ADDR: postgres
+      SQL_PORT: 5432
+      SQL_USER: engineerone
+      SQL_PASS: p4ssw0rd1
+      SQL_DB: jojonomic_gold
+      SQL_MAX_CONN: 10
+      SQL_MAX_OPEN: 10
+    depends_on:
+      - zookeeper  
+      - kafka
+      - postgres
+    networks:
+      - default-network
+
 networks:
   default-network:

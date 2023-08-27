@@ -1,6 +1,6 @@
 package broker
 
-type BrokerMessage struct {
+type BrokerEntity struct {
 	ReffId       string  `json:"reff_id"`
 	Type         string  `json:"type"`
 	Norek        string  `json:"norek"`

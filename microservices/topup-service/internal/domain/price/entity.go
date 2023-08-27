@@ -6,6 +6,6 @@ type PriceEntity struct {
 }
 
 type Data struct {
-	HargaTopup   float64 `json:"harga_topup"`
-	HargaBuyback float64 `json:"harga_buyback"`
+	HargaTopup   int64 `json:"harga_topup"`
+	HargaBuyback int64 `json:"harga_buyback"`
 }
