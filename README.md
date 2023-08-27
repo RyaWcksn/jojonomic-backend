@@ -51,12 +51,12 @@ Reference := [Youtube - Programmer Zaman Now](https://www.youtube.com/watch?v=nE
 
 **KAFKA**
 
-[Kafka](./misc/kafka.png)
+![Kafka](./misc/kafka.png)
 
 **KAFKA-UI**
 
-[Kafka-ui](./misc/kafka-ui.png)
+![Kafka-ui](./misc/kafka-ui.png)
 
 **POSTGRES**
 
-[Postgres](./misc/postgres.png)
+![Postgres](./misc/postgres.png)
