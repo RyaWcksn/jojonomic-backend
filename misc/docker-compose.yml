@@ -223,7 +223,7 @@ services:
 
   check-mutasi-service:
     build: 
-      context: ../microservices/check-mutasi-service
+      context: ../microservices/mutation-service
       dockerfile: Dockerfile
     ports:
       - "7005:7005"
@@ -247,6 +247,31 @@ services:
       - zookeeper  
       - kafka
       - postgres
+    networks:
+      - default-network
+
+  buyback-service:
+    build: 
+      context: ../microservices/buyback-service
+      dockerfile: Dockerfile
+    ports:
+      - "7006:7006"
+    restart: always
+    environment:
+      ENV: dev
+      SERVICE: buyback
+      LOG_LEVEL: debug
+      HOST: 0.0.0.0
+      PORT: 7006
+      PRICE_ADDR: http://check-harga-service:7002
+      SALDO_ADDR: http://check-saldo-service:7004
+      KAFKA_ADDR: kafka:29092
+      KAFKA_TOPIC: buyback
+    depends_on:
+      - zookeeper  
+      - kafka
+      - check-harga-service
+      - check-saldo-service
     networks:
       - default-network
 
