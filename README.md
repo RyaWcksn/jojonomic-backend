@@ -20,7 +20,7 @@ cd jojonomic-backend
 Build all service 
 
 ```sh
-docker compose -f ./misc/docker-compose.yml up -d --buld 
+docker compose -f ./misc/docker-compose.yml up -d --build 
 ```
 
 3. Test
