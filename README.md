@@ -17,7 +17,7 @@ cd jojonomic-backend
 
 2. Start all services (Including Kafka, Postgres, and Kafka-UI)
 
-Build all service 
+Build all service, each service's ENVs already specified at `docker-compose.yml` environment parameter
 
 ```sh
 docker compose -f ./misc/docker-compose.yml up -d --build 
@@ -30,6 +30,17 @@ Postman collection in
 ```sh
 ./misc/JOJONOMIC.json
 ```
+
+4. Individual services
+
+You can start service individually by going to the specific folders and then
+
+```sh
+go run cmd/main.go
+```
+
+Edit the `.env` file first 
+
 
 # Notes
 
